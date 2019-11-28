@@ -606,7 +606,7 @@ $authentificated = defined('PASSKEY') && isset($_SESSION['welcome']);
 			<div class="notice">
 				<a href="https://github.com/nl5001/newspager-Adventskalender" rel="external"><?php echo ADVENT_CALENDAR; ?></a> &middot; Version <?php echo implode('.', array_slice(explode('.', VERSION), 0, 2)); ?>
 				<br /><?php echo I18n::translation('developed-by', '<a href="http://nicolas.devenet.info" rel="external">Nicolas Devenet</a>'); ?>
-				<br />Modifiziert und weiterentwickelt von <a href="https://github.com/nl5001/">Niklas Lang</a>
+				<br />Modifiziert und weiterentwickelt von <a href="https://github.com/salkin01/">Niklas Lang</a>
 			</div>
 		</div>
 		</footer>
