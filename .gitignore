@@ -5,3 +5,4 @@ private/*.png
 private/*.gif
 private/calendar.json
 private/rss_cache.xml
+.DS_Store

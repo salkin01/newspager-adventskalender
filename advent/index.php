@@ -3,13 +3,14 @@
 /**
  *  Developed with love by Nicolas Devenet <nicolas[at]devenet.info>
  *  Code hosted on https://github.com/Devenet/AdventCalendar
+ *  Modifications copyright (C) 2018 Niklas Lang
  */
 
 error_reporting(0);
 
 // constants to be used
-define('VERSION', '1.5.0');
-define('ADVENT_CALENDAR', 'Advent Calendar');
+define('VERSION', '0.2');
+define('ADVENT_CALENDAR', 'Adventskalender');
 define('URL_DAY', 'day');
 define('URL_PHOTO', 'photo');
 define('URL_ABOUT', 'about');
@@ -38,9 +39,6 @@ if (file_exists(SETTINGS_FILE)) {
 
 	// is it a private calendar?
 	if (isset($settings->passkey) && !empty($settings->passkey)) { define('PASSKEY', $settings->passkey); }
-
-	// do the user want an other background?
-	if (isset($settings->background) && $settings->background == 'alternate') { define('ALTERNATE_BACKGROUND', TRUE); }
 
 	// what language?
 	if (isset($settings->lang) && !empty($settings->lang) && in_array(mb_strtolower($settings->lang), ['en', 'fr', 'de'])) {
@@ -119,8 +117,8 @@ abstract class AddOns {
 abstract class I18n {
 	static $translations = [
 		'day' => [ 'en' => 'Day {arg}', 'fr' => 'Jour {arg}', 'de' => 'Tag {arg}' ],
-		'previous-link-title' => [ 'en' => 'yesterday', 'fr' => 'hier', 'de' => 'gestern' ],
-		'next-link-title' => [ 'en' => 'tomorrow', 'fr' => 'demain', 'de' => 'morgen' ],
+		'previous-link-title' => [ 'en' => 'yesterday', 'fr' => 'hier', 'de' => 'Gestern' ],
+		'next-link-title' => [ 'en' => 'tomorrow', 'fr' => 'demain', 'de' => 'Morgen' ],
 		'be-patient-title' => [ 'en' => 'Be patient!', 'fr' => 'Patience !', 'de' => 'Geduld!' ],
 		'be-patient-panel-title' => [
 			'en' => 'Day {arg} is coming soon!',
@@ -130,20 +128,20 @@ abstract class I18n {
 		'be-patient-text' => [
 			'en' => 'You seems to be in hurry, but <strong>be patient</strong>, it is only in few days.',
 			'fr' => 'Vous semblez pressé·e, <strong>patience</strong>, c’est seulement dans quelques jours.',
-			'de' => 'You seems to be in hurry, but <strong>be patient</strong>, it is only in few days.'
+			'de' => 'Du scheinst es Eilig zu haben, aber <strong>sei geduldig</strong>, es ist in wenigen Tagen soweit.'
 		],
-		'developed-by' => [ 'en' => 'Developed by {arg}', 'fr' => 'Développé par {arg}', 'de' => 'Developed by {arg}' ],
-		'upstairs' => [ 'en' => 'upstairs', 'fr' => 'escaliers', 'de' => 'Treppe' ],
-		'about' => [ 'en' => 'about', 'fr' => 'à propos', 'de' => 'about' ],
-		'about-title' => [ 'en' => 'About', 'fr' => 'À propos', 'de' => 'About' ],
-		'private-area-title' => [ 'en' => 'This is a private area!', 'fr' => 'C’est une zone privée !', 'de' => 'This is a private area!' ],
+		'developed-by' => [ 'en' => 'Developed by {arg}', 'fr' => 'Développé par {arg}', 'de' => 'Entwickelt von {arg}' ],
+		'upstairs' => [ 'en' => 'upstairs', 'fr' => 'escaliers', 'de' => 'hoch­scrol­len' ],
+		'about' => [ 'en' => 'about', 'fr' => 'à propos', 'de' => 'Über' ],
+		'about-title' => [ 'en' => 'About', 'fr' => 'À propos', 'de' => 'Über' ],
+		'private-area-title' => [ 'en' => 'This is a private area!', 'fr' => 'C’est une zone privée !', 'de' => 'Dies ist ein geschützter Bereich!' ],
 		'private-area-signin' => [
 			'en' => 'Please sign in with your <b>passkey</b> to continue.',
 			'fr' => 'Connectez-vous avec votre <b>mot de passe</b> pour continuer.',
-			'de' => 'Please sign in with your <b>passkey</b> to continue.',
+			'de' => 'Bitte melden Sie sich mit Ihrem <b>Zugangscode</b> an, um fortzufahren.',
 		],
-		'signin' => [ 'en' => 'sign in', 'fr' => 'connexion', 'de' => 'sign in' ],
-		'logout' => [ 'en' => 'logout', 'fr' => 'déconnexion', 'de' => 'logout' ],
+		'signin' => [ 'en' => 'sign in', 'fr' => 'connexion', 'de' => 'Login' ],
+		'logout' => [ 'en' => 'logout', 'fr' => 'déconnexion', 'de' => 'Logout' ],
 	];
 
 	static function translation($text, $arg = null) {
@@ -259,8 +257,7 @@ abstract class Advent {
 		$result = '';
 		// is the day active ?
 		if ($active) { $result .= 'active '; }
-		// set a color for the background
-		$result .= 'day-color-'.($day%4 + 1);
+		$result .= 'day-color';
 		return $result;
 	}
 
@@ -355,10 +352,10 @@ abstract class Advent {
 		$result .= '<ul class="pager"><li class="previous';
 		if (self::isActiveDay($day-1) && ($day-1)>=FIRST_DAY) { $result .= '"><a href="?'. URL_DAY .'='. ($day-1) .'" title="'. I18n::translation('previous-link-title') .'" class="tip" data-placement="right">'; }
 		else { $result .= ' disabled"><a>'; }
-		$result .= '<i class="glyphicon glyphicon-hand-left"></i></a></li><li class="next';
+		$result .= '<i class="glyphicon glyphicon-hand-left hand"></i></a></li><li class="next';
 		if (self::isActiveDay($day+1) && ($day+1)<=LAST_DAY) { $result .= '"><a href="?'. URL_DAY .'='. ($day+1) .'" title="'. I18n::translation('next-link-title') .'" class="tip" data-placement="left">'; }
 		else { $result .= ' disabled"><a>'; }
-		$result .= '<i class="glyphicon glyphicon-hand-right"></i></a></li></ul>';
+		$result .= '<i class="glyphicon glyphicon-hand-right hand"></i></a></li></ul>';
 
 		// we add disqus thread if supported
 		if (AddOns::Found('disqus')) { $result .= '<div id="disqus_thread"></div>'; }
@@ -563,19 +560,25 @@ $authentificated = defined('PASSKEY') && isset($_SESSION['welcome']);
 		<link href="assets/css/adventcalendar.css" rel="stylesheet">
 
 		<?php if (!defined('PASSKEY')): ?><link rel="alternate" type="application/rss+xml" href="<?php echo RSS::getLink(); ?>" title="<?php echo TITLE; ?>" /><?php endif; ?>
+		<!--Snowstorm and Settings-->
+		<script src="./assets/js/snowstorm-min.js"></script>
+		<script>
+		snowStorm.snowStick = false;
+		snowStorm.excludeMobile = false;
+		</script>
 	</head>
 
 	<body>
-
+		<div class="wrapper">
 		<nav class="navbar navbar-default navbar-static-top" role="navigation">
 		<div class="container">
 		<div class="navbar-header">
-		<a class="navbar-brand tip" href="./" title="home" data-placement="right"><i class="glyphicon glyphicon-home"></i> <?php echo TITLE; ?></a>
+		<a class="navbar-brand tip" href="./" title="Start" data-placement="right"><i class="glyphicon glyphicon-home"></i> <?php echo TITLE; ?></a>
 		</div>
 
 		<div class="collapse navbar-collapse" id="navbar-collapse">
 		<ul class="nav navbar-nav navbar-right">
-			<li><a href="./?<?php echo URL_ABOUT; ?>" class="tip" data-placement="left" title="<?php echo I18n::translation('about'); ?>"><i class="glyphicon glyphicon-tree-conifer"></i> <?php echo ADVENT_CALENDAR; ?></a></li>
+			<!--<li><a href="./?<?php echo URL_ABOUT; ?>" class="tip" data-placement="left" title="<?php echo I18n::translation('about'); ?>"><i class="glyphicon glyphicon-tree-conifer"></i> <?php echo ADVENT_CALENDAR; ?></a></li>-->
 			<?php
 			// logout
 			if ($authentificated) { echo '<li><a href="./?logout" title="'. I18n::translation('logout') .'" class="tip" data-placement="bottom"><i class="glyphicon glyphicon-user"></i></a></li>'; }
@@ -587,22 +590,23 @@ $authentificated = defined('PASSKEY') && isset($_SESSION['welcome']);
 		</div>
 		</nav>
 
-		<div class="background<?php if(defined('ALTERNATE_BACKGROUND')) { echo ' alternate-background'; } ?>">
+	
 		<?php
 			echo $template;
 		?>
+		
+		<div class="push"></div>
 		</div>
-
-		<footer>
-		<hr />
+		<footer class="footer">
 		<?php if(!empty(DISCLAIMER)): ?>
 			<div class="disclaimer text-center"><?php echo DISCLAIMER; ?></div>
 		<?php endif; ?>
 		<div class="container">
 			<p class="pull-right"><a href="#" id="goHomeYouAreDrunk" class="tip" data-placement="left" title="<?php echo I18n::translation('upstairs'); ?>"><i class="glyphicon glyphicon-menu-up"></i></a></p>
 			<div class="notice">
-				<a href="https://github.com/Devenet/AdventCalendar" rel="external"><?php echo ADVENT_CALENDAR; ?></a> &middot; Version <?php echo implode('.', array_slice(explode('.', VERSION), 0, 2)); ?>
+				<a href="https://github.com/nl5001/newspager-Adventskalender" rel="external"><?php echo ADVENT_CALENDAR; ?></a> &middot; Version <?php echo implode('.', array_slice(explode('.', VERSION), 0, 2)); ?>
 				<br /><?php echo I18n::translation('developed-by', '<a href="http://nicolas.devenet.info" rel="external">Nicolas Devenet</a>'); ?>
+				<br />Modifiziert und weiterentwickelt von <a href="https://github.com/nl5001/">Niklas Lang</a>
 			</div>
 		</div>
 		</footer>
